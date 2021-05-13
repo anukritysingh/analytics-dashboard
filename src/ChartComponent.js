@@ -15,9 +15,9 @@ class ChartComponent extends Component {
   }
 
   render() { 
-   console.log('chart  ',this.props.options);
+   console.log('chart  ',this.props);
     return (
-       <div className='chart-body'>
+       <div className={`${this.props.name}-chart-body`}>
             <HighchartsReact
                 highcharts={Highcharts}
                 options={this.props.options}

@@ -191,6 +191,9 @@ getNewOrdersData(param='1')
                 height: 200,
                 type: 'spline'
             },
+            credits: {
+                enabled: false
+           },
             title: {
               text: 'NEW ORDERS',
               align: 'left',
@@ -232,7 +235,7 @@ getNewOrdersData(param='1')
     }
 
     // fetch call newOrdersData for today
-        let url = param !== '1' ? `www.mydomain.com/orders/new?days=${param}` : 'www.mydomain.com/orders/new?days=1';
+        /*let url = param !== '1' ? `www.mydomain.com/orders/new?days=${param}` : 'www.mydomain.com/orders/new?days=1';
         this.setState({ isLoading: true });  
             fetch(url)
             .then(response => response.json())
@@ -262,7 +265,7 @@ getNewOrdersData(param='1')
                     isLoading: false
                 });
                 console.error('There was an error!', error);
-            });
+            });*/
     
     /** -------- Rendering with Hard Coded data -----------
      * Please comment the below to use with actual URL data
@@ -275,7 +278,6 @@ getNewOrdersData(param='1')
     });
 
     let options = generateOptions(chartData);
-
     this.setState({
         newOrdersData: {options:options}
     });
@@ -298,6 +300,9 @@ getReturnVolumeData(param='1') {
                 height: 200,
                 type: 'column'
             },
+            credits: {
+                enabled: false
+           },
             title: {
                 text: 'RETURNS  VOLUME',
                 align: 'left',
@@ -331,7 +336,7 @@ getReturnVolumeData(param='1') {
           return options;
     }
 
-    let url = param !== '1' ? `www.mydomain.com/returns?days=${param}` : 'www.mydomain.com/returns?days=1';
+    /*let url = param !== '1' ? `www.mydomain.com/returns?days=${param}` : 'www.mydomain.com/returns?days=1';
         this.setState({ isLoading: true });  
             fetch(url)
             .then(response => response.json())
@@ -361,7 +366,7 @@ getReturnVolumeData(param='1') {
                     isLoading: false
                 });
                 console.error('There was an error!', error);
-            });
+            });*/
     
     /** -------- Rendering with Hard Coded data -----------
      * Please comment the below to use with actual URL data
@@ -423,6 +428,9 @@ getCurrentMonthSalesData() {
                 height:200,
                 type: 'areaspline'
             },
+            credits: {
+                enabled: false
+           },
             title:{
                 text:''
             },
@@ -450,7 +458,7 @@ getCurrentMonthSalesData() {
           return options;
     }
 
-    let url = 'www.mydomain.com/returns?days=1';
+    /*let url = 'www.mydomain.com/returns?days=1';
     this.setState({ isLoading: true });  
         fetch(url)
         .then(response => response.json())
@@ -465,7 +473,7 @@ getCurrentMonthSalesData() {
                 currentMonthSalesData: {options:options},
                 pieChartData: pieChartOption,
                 currMonthSales: payload['currMonthSales'],
-                diffInSales: Math. round(100 * Math.abs( ( payload['currMonthSales'] -  payload['lastMonthSales'] ) /  payload['lastMonthSales'] ) ),
+                diffInSales: Math.round(100 * Math.abs( ( payload['currMonthSales'] -  payload['lastMonthSales'] ) /  payload['lastMonthSales'] ) ),
                 isProfit: payload['currMonthSales'] > payload['lastMonthSales'] ? true : false,
                 errorMessage: '',
                 isError: false,
@@ -479,7 +487,7 @@ getCurrentMonthSalesData() {
                 isLoading: false
             });
             console.error('There was an error!', error);
-        });
+        }); */
 
 /** -------- Rendering with Hard Coded data -----------
  * Please comment the below to use with actual URL data
@@ -488,11 +496,12 @@ getCurrentMonthSalesData() {
 
     let options = generateOptions(chartData);
     let pieChartOption = generatePieOptions(MONTHLY_SALES_DATA)
+
     this.setState({
         currentMonthSalesData: {options:options},
         pieChartData: pieChartOption,
         currMonthSales: MONTHLY_SALES_DATA['currMonthSales'],
-        diffInSales: Math. round(100 * Math.abs( ( MONTHLY_SALES_DATA['currMonthSales'] -  MONTHLY_SALES_DATA['lastMonthSales'] ) /  MONTHLY_SALES_DATA['lastMonthSales'] ) ),
+        diffInSales: Math.round(100 * Math.abs( ( MONTHLY_SALES_DATA['currMonthSales'] -  MONTHLY_SALES_DATA['lastMonthSales'] ) /  MONTHLY_SALES_DATA['lastMonthSales'] ) ),
         isProfit: MONTHLY_SALES_DATA['currMonthSales'] > MONTHLY_SALES_DATA['lastMonthSales'] ? true : false
 
     });
@@ -509,16 +518,19 @@ componentDidMount() {
     this.getCurrentMonthSalesData();
 
     let lineChartSelect = document.querySelector('select[name="line-chart-selector"]');
-    lineChartSelect.addEventListener("change", (e) => {
-        this.getNewOrdersData(e.target.value);
-        console.log(e.target.value)
-      });
+    if(lineChartSelect) {
+        lineChartSelect.addEventListener("change", (e) => {
+            this.getNewOrdersData(e.target.value);
+          });
+    }
     
     let barChartSelect = document.querySelector('select[name="bar-chart-selector"]');
-    barChartSelect.addEventListener("change", (e) => {
-        this.getReturnVolumeData(e.target.value);
-        console.log(e.target.value)
-      });
+    if(barChartSelect) {
+        barChartSelect.addEventListener("change", (e) => {
+            this.getReturnVolumeData(e.target.value);
+          });
+    }
+    
 }
 
 render() { 
@@ -541,28 +553,30 @@ render() {
 
 
             <div className="line-chart">
-                    <select id="chart-selector" name="line-chart-selector">
+                    <select id="line-chart-selector" name="line-chart-selector">
                         <option value="1">Today</option>
                         <option value="7">Last 7 Days</option>
                         <option value="30">Last 30 Days</option>   
                     </select>
-                <ChartComponent options= {this.state.newOrdersData.options} />
+                    {Object.keys(this.state.newOrdersData).length !== 0 && this.state.newOrdersData['options'] && Object.keys(this.state.newOrdersData['options']).length !== 0 ?
+                    <ChartComponent options= {this.state.newOrdersData.options} name='line'/>: null}
             </div>
 
             <div className="bar-chart">
-                <select id="chart-selector" name="bar-chart-selector">
+                <select id="bar-chart-selector" name="bar-chart-selector">
                     <option value="1">Today</option>
                     <option value="7">Last 7 Days</option>
                     <option value="30">Last 30 Days</option>   
                 </select>
-                <ChartComponent options= {this.state.returnVolumeData.options}/>    
+                {Object.keys(this.state.returnVolumeData).length !== 0 && this.state.returnVolumeData['options'] && Object.keys(this.state.returnVolumeData['options']).length !== 0 ?
+                <ChartComponent options= {this.state.returnVolumeData.options} name='bar'/> : null} 
             </div> 
             
             <div className="area-chart">
-                <div style={{float: 'left'}}>
+                <div style={{float: 'left', height: '0px'}}>
                     <p style={{margin:'0px',padding:'10px 60px 10px 2px',font:'bold 20px Arial, Helvetica, sans-serif',color:'grey'}}>Orders over Time</p>
                     <span style={{float: 'left', position: 'relative', bottom: '14px'}}>
-                        <ChartComponent options= {this.state.pieChartData}/> 
+                        <ChartComponent options= {this.state.pieChartData} name='pie'/> 
                     </span>
                     <span style={{margin:'0px',padding:'2px',font:'normal 15px Arial, Helvetica, sans-serif',color:'grey',position: 'relative', top: '14px'}}>
                         This month's sales: ${this.state.currMonthSales}
@@ -570,7 +584,8 @@ render() {
                         : <p style={{margin:'0px',fontSize:'12px'}}>{this.state.diffInSales}% less than last month</p>} 
                     </span>
                 </div>
-                <ChartComponent options= {this.state.currentMonthSalesData.options}/> 
+                {Object.keys(this.state.currentMonthSalesData).length !== 0 && this.state.currentMonthSalesData['options'] && Object.keys(this.state.currentMonthSalesData['options']).length !== 0 ?
+                <ChartComponent options= {this.state.currentMonthSalesData.options} name='area'/> : null}
             </div>
 
 
